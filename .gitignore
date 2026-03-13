@@ -1,0 +1,25 @@
+# Binaries
+Binaries/
+Build/
+
+# Intermediate
+Intermediate/
+
+# Saved (logs, configurazioni locali, ecc.)
+Saved/
+
+# Plugin binaries
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+
+# Visual Studio
+.vs/
+*.sln
+*.suo
+
+# Rider
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
