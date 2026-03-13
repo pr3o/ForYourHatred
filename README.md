@@ -1,0 +1,2 @@
+# TheVillainWantsToLive
+A solo passion project and learning journey with Unreal Engine. This is an unofficial, non-commercial fan adaptation of the Korean web novel The Villain Wants to Live (악당은 살고 싶다). The story of Deculein is reimagined and readapted — not a 1:1 recreation, but a new interpretation built around the original's themes and characters. Developed from scratch by a solo developer with no prior Unreal experience. Expect rough edges, slow progress, and a lot of learning in public.
