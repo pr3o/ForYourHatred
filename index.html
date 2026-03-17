@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For Your Hatred — Game Concept</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600;900&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --black: #060608;
+      --deep: #0c0c14;
+      --dark: #12121e;
+      --card: #16161f;
+      --border: rgba(180, 140, 60, 0.18);
+      --gold: #b48c3c;
+      --gold-light: #d4aa5a;
+      --gold-pale: rgba(180, 140, 60, 0.12);
+      --red: #8c2222;
+      --red-bright: #c43030;
+      --red-pale: rgba(140, 34, 34, 0.15);
+      --text: #d8d0c0;
+      --muted: #7a7060;
+      --white: #f0ead8;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ─── CANVAS BACKGROUND ─── */
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      background-size: 180px 180px;
+      opacity: 0.03;
+    }
+
+    /* ─── WRAPPER ─── */
+    .site { position: relative; z-index: 2; }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 4rem;
+      background: linear-gradient(to bottom, rgba(6,6,8,0.95), transparent);
+      backdrop-filter: blur(2px);
+    }
+
+    .nav-logo {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.35em;
+      color: var(--gold);
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover { color: var(--gold-light); }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 1s ease 0.3s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(3.2rem, 8vw, 7.5rem);
+      font-weight: 300;
+      line-height: 1.05;
+      color: var(--white);
+      max-width: 900px;
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 1.2s ease 0.5s forwards;
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .hero-subtitle {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--muted);
+      margin-top: 1.5rem;
+      margin-bottom: 3.5rem;
+      max-width: 600px;
+      opacity: 0;
+      animation: fadeUp 1.2s ease 0.8s forwards;
+    }
+
+    .hero-divider {
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      margin: 0 auto 3rem;
+      opacity: 0;
+      animation: fadeUp 1s ease 1s forwards;
+    }
+
+    .hero-tagline {
+      font-size: 1.05rem;
+      color: var(--text);
+      max-width: 540px;
+      opacity: 0;
+      animation: fadeUp 1s ease 1.2s forwards;
+    }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.6rem;
+      opacity: 0;
+      animation: fadeIn 1s ease 2s forwards;
+    }
+
+    .hero-scroll span {
+      font-family: 'Cinzel', serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollLine 2s ease infinite;
+    }
+
+    @keyframes scrollLine {
+      0% { transform: scaleY(0); transform-origin: top; }
+      50% { transform: scaleY(1); transform-origin: top; }
+      51% { transform: scaleY(1); transform-origin: bottom; }
+      100% { transform: scaleY(0); transform-origin: bottom; }
+    }
+
+    /* ─── SECTIONS ─── */
+    section {
+      padding: 7rem 2rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 300;
+      color: var(--white);
+      line-height: 1.2;
+      margin-bottom: 2.5rem;
+    }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    /* ─── CONCEPT ─── */
+    #concept {
+      background: linear-gradient(to bottom, var(--black), var(--deep));
+    }
+
+    .concept-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .concept-text p {
+      color: var(--text);
+      margin-bottom: 1.5rem;
+      font-size: 1.05rem;
+    }
+
+    .concept-text p:last-child { margin-bottom: 0; }
+
+    .quote-block {
+      border-left: 1px solid var(--gold);
+      padding: 1.5rem 2rem;
+      margin: 2.5rem 0;
+      background: var(--gold-pale);
+      border-radius: 0 4px 4px 0;
+    }
+
+    .quote-block p {
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--white);
+      margin: 0;
+    }
+
+    .quote-block cite {
+      display: block;
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 1rem;
+      font-style: normal;
+    }
+
+    .concept-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: sticky;
+      top: 6rem;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.8rem;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.3s;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .stat-card:hover { border-color: rgba(180, 140, 60, 0.4); }
+    .stat-card:hover::before { opacity: 1; }
+
+    .stat-card-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.6rem;
+    }
+
+    .stat-card-value {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--white);
+      line-height: 1.2;
+    }
+
+    .stat-card p {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+    }
+
+    /* ─── CHARACTERS ─── */
+    #characters {
+      background: var(--deep);
+    }
+
+    .chars-header {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+
+    .chars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    .char-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2.5rem 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.4s ease, border-color 0.3s;
+    }
+
+    .char-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(180, 140, 60, 0.5);
+    }
+
+    .char-card--red { --accent: var(--red-bright); }
+    .char-card--gold { --accent: var(--gold-light); }
+    .char-card--silver { --accent: #8899b4; }
+
+    .char-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+    }
+
+    .char-card:hover::after { transform: scaleX(1); }
+
+    .char-glyph {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 3rem;
+      font-weight: 300;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 1.2rem;
+      display: block;
+    }
+
+    .char-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 0.3rem;
+    }
+
+    .char-role {
+      font-family: 'Cinzel', serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.2rem;
+    }
+
+    .char-desc {
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    .char-trait {
+      display: inline-block;
+      font-family: 'Cinzel', serif;
+      font-size: 0.5rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid currentColor;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      margin-top: 1.2rem;
+      margin-right: 0.4rem;
+      opacity: 0.8;
+    }
+
+    /* ─── MECHANICS ─── */
+    #mechanics {
+      background: linear-gradient(to bottom, var(--deep), var(--dark));
+    }
+
+    .mechanics-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 6rem;
+      align-items: start;
+    }
+
+    .mechanics-text p {
+      color: var(--text);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ─── CURSE WIDGET ─── */
+    .curse-widget {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2.5rem;
+      position: sticky;
+      top: 6rem;
+    }
+
+    .curse-widget-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .curse-widget-name {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.4rem;
+      color: var(--white);
+      text-align: center;
+      margin-bottom: 0.3rem;
+    }
+
+    .curse-widget-status {
+      font-family: 'Cinzel', serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--red-bright);
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .bar-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .bar-label span:first-child {
+      font-family: 'Cinzel', serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .bar-label span:last-child {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--white);
+    }
+
+    .bar-track {
+      height: 6px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1.5s ease;
+    }
+
+    .bar-fill--hate { background: linear-gradient(to right, var(--red), var(--red-bright)); width: 78%; }
+    .bar-fill--love { background: linear-gradient(to right, #2a4a6a, #4a7aa8); width: 12%; }
+    .bar-fill--life { background: linear-gradient(to right, #2a5c2a, #3a8c3a); width: 70%; }
+
+    .curse-note {
+      margin-top: 2rem;
+      padding: 1.2rem;
+      background: var(--red-pale);
+      border: 1px solid rgba(140,34,34,0.3);
+      border-radius: 4px;
+    }
+
+    .curse-note p {
+      font-size: 0.88rem;
+      color: var(--text);
+      font-style: italic;
+      line-height: 1.6;
+    }
+
+    /* ─── ACTS ─── */
+    #story {
+      background: var(--dark);
+    }
+
+    .acts-header {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+
+    .acts-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .act-card {
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .act-card + .act-card {
+      border-left: 1px solid var(--border);
+    }
+
+    .act-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+
+    .act-card--I::before   { background: linear-gradient(135deg, rgba(180,140,60,0.05), transparent); }
+    .act-card--II::before  { background: linear-gradient(135deg, rgba(140,34,34,0.08), transparent); }
+    .act-card--III::before { background: linear-gradient(135deg, rgba(60,100,160,0.07), transparent); }
+
+    .act-card:hover::before { opacity: 1; }
+
+    .act-number {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.5rem;
+    }
+
+    .act-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.7rem;
+      font-weight: 300;
+      color: var(--white);
+      margin-bottom: 0.3rem;
+    }
+
+    .act-duration {
+      font-family: 'Cinzel', serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.25em;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .act-beats {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .act-beats li {
+      font-size: 0.92rem;
+      color: var(--text);
+      padding-left: 1rem;
+      position: relative;
+      line-height: 1.5;
+    }
+
+    .act-beats li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      opacity: 0.6;
+    }
+
+    /* ─── SCENE ─── */
+    #scene {
+      background: linear-gradient(to bottom, var(--dark), var(--deep));
+    }
+
+    .scene-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .scene-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .scene-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .scene-bar-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .scene-bar-status {
+      font-family: 'Cinzel', serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--red-bright);
+    }
+
+    .scene-content {
+      padding: 2.5rem;
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    .scene-location {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .scene-action {
+      font-style: italic;
+      color: var(--muted);
+      margin: 0.5rem 0;
+    }
+
+    .scene-line {
+      margin: 1rem 0;
+    }
+
+    .scene-speaker {
+      font-family: 'Cinzel', serif;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .scene-speaker--julie { color: var(--red-bright); }
+    .scene-speaker--thought { color: #6688aa; font-style: italic; }
+
+    .scene-dialogue {
+      color: var(--white);
+      font-size: 1.05rem;
+    }
+
+    .scene-choice-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 2rem 0 0.8rem;
+    }
+
+    .scene-choices {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .scene-choice {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.7rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+      color: var(--text);
+      text-align: left;
+    }
+
+    .scene-choice:hover {
+      background: var(--gold-pale);
+      border-color: var(--gold);
+      color: var(--white);
+    }
+
+    .scene-choice--active {
+      background: var(--gold-pale);
+      border-color: var(--gold);
+      color: var(--white);
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 4rem 2rem;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      background: var(--black);
+    }
+
+    .footer-title {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: 1.4rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--gold-light);
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-note {
+      font-family: 'Cinzel', serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .concept-grid,
+      .mechanics-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .concept-stats,
+      .curse-widget { position: static; }
+      .chars-grid { grid-template-columns: 1fr; }
+      .acts-row { grid-template-columns: 1fr; }
+      .act-card + .act-card { border-left: none; border-top: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div class="site">
+
+  <!-- ─── NAV ─── -->
+  <nav>
+    <a class="nav-logo" href="#">For Your Hatred</a>
+    <ul class="nav-links">
+      <li><a href="#concept">Concept</a></li>
+      <li><a href="#characters">Personaggi</a></li>
+      <li><a href="#mechanics">Meccaniche</a></li>
+      <li><a href="#story">Storia</a></li>
+      <li><a href="#scene">Scena Demo</a></li>
+    </ul>
+  </nav>
+
+  <!-- ─── HERO ─── -->
+  <section id="hero">
+    <p class="hero-eyebrow">Game Concept — Visual Novel / RPG</p>
+    <h1 class="hero-title"><em>For Your</em> Hatred</h1>
+    <div class="hero-divider"></div>
+    <p class="hero-subtitle">Basato sul romanzo coreano <em>The Villain Wants to Live</em></p>
+    <p class="hero-tagline">Sei il villain. Hai perso la memoria. E più scopri chi eri davvero, più capisci che l'odio di lei è l'unica cosa che la tiene viva.</p>
+    <div class="hero-scroll">
+      <span>Scorri</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ─── CONCEPT ─── -->
+  <section id="concept">
+    <div class="container">
+      <div class="concept-grid">
+        <div class="concept-text reveal">
+          <span class="section-label">Il Concept</span>
+          <h2 class="section-title">Sei il <em>villain</em>.<br/>E non ricordi niente.</h2>
+
+          <p>Incarni <strong>Lord Deculein Yukline</strong> — professore all'Università Imperiale, nobile di altissimo rango, uomo temuto e rispettato in egual misura. Freddo, spietato, ossessionato dall'igiene. Un villain destinato a morire in quasi ogni linea temporale conosciuta.</p>
+
+          <p>Ma questa è la tua storia. E tu ti risvegli senza ricordi.</p>
+
+          <p>Non sai cosa hai fatto a Marik, dieci anni fa. Non sai quale promessa hai spezzato. Non capisci perché tua sorella Yeriel ti guardi con quella miscela di rabbia e nostalgia. E non riesci a spiegare perché, ogni volta che vedi <strong>Lady Julie von Deya-Freyden</strong>, qualcosa dentro di te si incrina.</p>
+
+          <div class="quote-block">
+            <p>«Ancora non te ne ricordi, vero? La PROMESSA, Deculein. La promessa che mi hai fatto.»</p>
+            <cite>— Julie, primo incontro</cite>
+          </div>
+
+          <p>Il gioco è un viaggio a ritroso dentro te stesso. Ogni frammento di memoria recuperato rivela un Deculein diverso da quello che tutti credono di conoscere — e diverso da quello che tu stesso pensavi di essere.</p>
+
+          <p>La scoperta finale sarà la più difficile da portare: <strong>hai sempre amato Julie. Hai sempre tenuto a Yeriel.</strong> Il villain era una maschera. E quella maschera ha causato tutto questo.</p>
+        </div>
+
+        <div class="concept-stats reveal">
+          <div class="stat-card">
+            <p class="stat-card-label">Genere</p>
+            <p class="stat-card-value">Dark Romance Visual Novel</p>
+            <p>Con elementi RPG e scelte morali ad alto impatto narrativo</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-card-label">Ispirazione</p>
+            <p class="stat-card-value">The Villain Wants to Live</p>
+            <p>Romanzo coreano — adattamento originale per videogioco</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-card-label">Durata Stimata</p>
+            <p class="stat-card-value">~10 ore</p>
+            <p>3 atti principali, finali multipli, percorsi alternativi</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-card-label">Tema Centrale</p>
+            <p class="stat-card-value">Chi ero davvero?</p>
+            <p>Sotto la maschera del villain si nasconde un uomo che ha amato — e ha avuto paura di dirlo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CHARACTERS ─── -->
+  <section id="characters">
+    <div class="container">
+      <div class="chars-header reveal">
+        <span class="section-label">I Personaggi</span>
+        <h2 class="section-title">Un cast di anime spezzate</h2>
+      </div>
+
+      <div class="chars-grid">
+
+        <div class="char-card char-card--gold reveal">
+          <span class="char-glyph">D</span>
+          <p class="char-name">Deculein Yukline</p>
+          <p class="char-role">Il Villain — Il Protagonista</p>
+          <p class="char-desc">Professore di magia all'Università Imperiale, nobile di altissimo rango. Freddo, arrogante, ossessionato dall'igiene. Temuto da tutti, amato da nessuno — o almeno, così sembra. Dopo un evento traumatico, si risveglia senza ricordi del suo passato. La scoperta di chi era davvero — e di quanto tenesse a Julie e a Yeriel — è il cuore del gioco.</p>
+          <span class="char-trait">Il Vero Villain</span>
+          <span class="char-trait">Amnesia</span>
+          <span class="char-trait">Maschera Spezzata</span>
+        </div>
+
+        <div class="char-card char-card--red reveal">
+          <span class="char-glyph">J</span>
+          <p class="char-name">Julie von Deya-Freyden</p>
+          <p class="char-role">Love Interest — La Maledetta</p>
+          <p class="char-desc">Sopravvissuta all'imboscata di Marik dieci anni fa con un nucleo di mana frantumato. La maledizione si nutre di emozioni positive — la gioia la consuma, l'amore la uccide. Solo l'odio profondo verso Deculein la mantiene in vita. Porta la promessa spezzata come una ferita aperta.</p>
+          <span class="char-trait">Maledetta</span>
+          <span class="char-trait">Fragile / Letale</span>
+          <span class="char-trait">Odio = Vita</span>
+        </div>
+
+        <div class="char-card char-card--silver reveal">
+          <span class="char-glyph">Y</span>
+          <p class="char-name">Yeriel Yukline</p>
+          <p class="char-role">Sorella — Lo Specchio del Passato</p>
+          <p class="char-desc">Sorella adottiva di Deculein, erede della casa Yukline. Cresciuta nell'ombra di un fratello che sembrava non volerle bene — eppure lei lo amava, e lui la proteggeva in modi che lei non riconosceva come tali. Con l'amnesia di Deculein, qualcosa in lei cambia: vede negli occhi del fratello un calore che non aveva mai notato prima, e non sa se sperare o temerlo.</p>
+          <span class="char-trait">Adottata</span>
+          <span class="char-trait">Risentimento / Amore</span>
+          <span class="char-trait">Chiave della Verità</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── MECHANICS ─── -->
+  <section id="mechanics">
+    <div class="container">
+      <div class="mechanics-layout">
+
+        <div class="mechanics-text reveal">
+          <span class="section-label">Le Meccaniche</span>
+          <h2 class="section-title">Un paradosso<br/><em>impossibile</em> da risolvere</h2>
+
+          <p>Il cuore del gioco è un sistema a tre variabili in costante tensione: <strong>Odio</strong>, <strong>Affetto</strong> e <strong>Forza Vitale</strong> di Julie. Queste tre metriche si influenzano a vicenda in modi che rendono ogni scelta un dilemma morale.</p>
+
+          <p>Ridurre l'odio di Julie è esattamente ciò che il tuo cuore vuole fare — perché man mano che recuperi i tuoi ricordi, capisci quanto le volevi bene. Ma ogni momento di calore che condividi con lei, ogni volta che la fai sorridere, consuma la sua forza vitale. Il suo amore la uccide.</p>
+
+          <p>Il tuo obiettivo non è solo riconquistarla. È <strong>spezzare la maledizione prima</strong> — tornare a Marik, capire cosa è successo davvero, trovare una cura. Solo dopo potrai permetterti di essere te stesso con lei.</p>
+
+          <p>Ma il tempo stringe. E ogni scelta sbagliata sbilancia il delicato equilibrio, portandoti verso uno degli undici finali — tra cui quello in cui non ce la fai in tempo.</p>
+
+          <div class="quote-block">
+            <p>«L'odio mi tiene in vita. E finché ti odio... posso continuare.»</p>
+            <cite>— Julie, estratto dal suo diario</cite>
+          </div>
+        </div>
+
+        <div class="curse-widget reveal">
+          <p class="curse-widget-title">⚕ Sistema: Cuore Maledetto</p>
+          <p class="curse-widget-name">Julie von Deya-Freyden</p>
+          <p class="curse-widget-status">⚠ Maledizione Attiva — Nucleo Frantumato</p>
+
+          <div class="bar-group">
+            <div class="bar-label">
+              <span>💔 Odio verso Deculein</span>
+              <span>78%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-fill--hate"></div>
+            </div>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar-label">
+              <span>💙 Affetto / Fiducia</span>
+              <span>12%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-fill--love"></div>
+            </div>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar-label">
+              <span>🌿 Forza Vitale</span>
+              <span>70%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-fill--life"></div>
+            </div>
+          </div>
+
+          <div class="curse-note">
+            <p>⚠ Se l'Odio scende sotto il 20% prima che la maledizione sia spezzata, Julie inizia a morire. Non cercare di farla innamorare troppo presto.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── STORY ─── -->
+  <section id="story">
+    <div class="container">
+      <div class="acts-header reveal">
+        <span class="section-label">La Struttura Narrativa</span>
+        <h2 class="section-title">Tre atti. <em>Nessuna via facile.</em></h2>
+      </div>
+
+      <div class="acts-row reveal">
+        <div class="act-card act-card--I">
+          <p class="act-number">Atto I</p>
+          <h3 class="act-title">Il Risveglio</h3>
+          <p class="act-duration">~3 ore di gioco</p>
+          <ul class="act-beats">
+            <li>Deculein si risveglia senza ricordi del passato recente</li>
+            <li>Navigare l'Università Imperiale come uomo spezzato</li>
+            <li>Primo incontro con Julie — odio immediato, inspiegabile</li>
+            <li>La "promessa" viene menzionata per la prima volta</li>
+            <li>Yeriel: tensione tra risentimento e speranza nascosta</li>
+            <li>Domanda centrale: cosa ho fatto per meritare tutto questo?</li>
+          </ul>
+        </div>
+
+        <div class="act-card act-card--II">
+          <p class="act-number">Atto II</p>
+          <h3 class="act-title">I Frammenti</h3>
+          <p class="act-duration">~4 ore di gioco</p>
+          <ul class="act-beats">
+            <li>I ricordi tornano in frammenti — non lineari, dolorosi</li>
+            <li>Il diario di Julie: la promessa rivelata, la ferita di Marik</li>
+            <li>Flashback: il vero Deculein proteggeva, amava, aveva paura</li>
+            <li>Yeriel rivela la natura della maledizione di Julie</li>
+            <li>Momento di svolta: il tuo affetto la sta uccidendo</li>
+            <li>Investigazione disperata su Marik e sulla maledizione</li>
+          </ul>
+        </div>
+
+        <div class="act-card act-card--III">
+          <p class="act-number">Atto III</p>
+          <h3 class="act-title">La Verità</h3>
+          <p class="act-duration">~3 ore di gioco</p>
+          <ul class="act-beats">
+            <li>La quest finale per spezzare la maledizione</li>
+            <li>Confronto con chi sei stato — e chi vuoi essere</li>
+            <li>Confessione a Julie: ti ho sempre amata. Mi scuso.</li>
+            <li>Riconciliazione con Yeriel — il fratello che non sapeva mostrare amore</li>
+            <li>Finale ramificato — 11 epiloghi possibili</li>
+            <li>Finale vero: maledizione spezzata, amore libero, famiglia ritrovata</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SCENE ─── -->
+  <section id="scene">
+    <div class="container">
+      <div class="scene-header reveal">
+        <span class="section-label">Scena Demo</span>
+        <h2 class="section-title">Il primo incontro</h2>
+      </div>
+
+      <div class="scene-box reveal">
+        <div class="scene-bar">
+          <span class="scene-bar-title">📖 Capitolo I — Corridoio dell'Università Imperiale</span>
+          <span class="scene-bar-status">💔 Odio Julie: 85%</span>
+        </div>
+        <div class="scene-content">
+          <p class="scene-location">[ Università Imperiale — Corridoio Est, mattino presto ]</p>
+
+          <p class="scene-action">[Stai camminando verso la tua aula. Una figura ti blocca il passaggio.]</p>
+
+          <div class="scene-line">
+            <span class="scene-speaker scene-speaker--julie">Julie</span>
+            <span class="scene-dialogue">«Lord Deculein.»</span>
+          </div>
+
+          <p class="scene-action">[La sua voce è ghiaccio puro. Capisce immediatamente che ti conosce — e che non vuole farlo.]</p>
+
+          <div class="scene-line">
+            <span class="scene-speaker">Deculein</span>
+            <span class="scene-dialogue">«Lady Julie. Ho una lezione tra dieci minuti —»</span>
+          </div>
+
+          <div class="scene-line">
+            <span class="scene-speaker scene-speaker--julie">Julie</span>
+            <span class="scene-dialogue">«Ancora non te ne ricordi, vero?»</span>
+          </div>
+
+          <p class="scene-action">[Silenzio. I suoi occhi ti fissano come se cercassero qualcosa — e non lo trovassero.]</p>
+
+          <div class="scene-line">
+            <span class="scene-speaker scene-speaker--thought">Pensiero — Frammento</span>
+            <span class="scene-dialogue" style="color:#6688aa; font-style:italic;">«Promessa... quella parola mi stringe qualcosa nel petto. Come se la conoscessi. Come se l'avessi già detta.»</span>
+          </div>
+
+          <p class="scene-choice-label">▸ Scegli come rispondere</p>
+          <div class="scene-choices" id="choices">
+            <button class="scene-choice" onclick="pickChoice(0)">&gt; «Ricordare cosa?» &nbsp;<em style="color:var(--muted);font-size:0.85em;">(Onesto — rischioso)</em></button>
+            <button class="scene-choice" onclick="pickChoice(1)">&gt; «Naturalmente me ne ricordo.» &nbsp;<em style="color:var(--muted);font-size:0.85em;">(Bluff — pericoloso)</em></button>
+            <button class="scene-choice" onclick="pickChoice(2)">&gt; [Restare in silenzio e osservarla] &nbsp;<em style="color:var(--muted);font-size:0.85em;">(Neutrale)</em></button>
+          </div>
+
+          <div id="choice-result" style="display:none; margin-top:1.5rem; padding:1.2rem; background:rgba(180,140,60,0.06); border:1px solid var(--border); border-radius:4px;">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <p class="footer-title">«Ti prometto che ti farò sorridere. Ogni singolo giorno.»</p>
+    <p class="footer-note" style="margin-top:1rem;">Game Concept — Basato su <em>The Villain Wants to Live</em> — Progetto fan-made non commerciale</p>
+  </footer>
+
+</div>
+
+<!-- ─── SCRIPTS ─── -->
+<script>
+  /* Particle canvas */
+  const canvas = document.getElementById('bg-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+
+  class Particle {
+    constructor() { this.reset(true); }
+    reset(init = false) {
+      this.x = Math.random() * W;
+      this.y = init ? Math.random() * H : H + 10;
+      this.size = Math.random() * 1.5 + 0.3;
+      this.speed = Math.random() * 0.3 + 0.1;
+      this.opacity = Math.random() * 0.4 + 0.05;
+      this.drift = (Math.random() - 0.5) * 0.2;
+    }
+    update() {
+      this.y -= this.speed;
+      this.x += this.drift;
+      if (this.y < -10) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(180, 140, 60, ${this.opacity})`;
+      ctx.fill();
+    }
+  }
+
+  function initParticles() {
+    particles = [];
+    for (let i = 0; i < 60; i++) particles.push(new Particle());
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    requestAnimationFrame(animate);
+  }
+
+  resize();
+  initParticles();
+  animate();
+  window.addEventListener('resize', () => { resize(); initParticles(); });
+
+  /* Scroll reveal */
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  reveals.forEach(r => observer.observe(r));
+
+  const results = [
+    {
+      text: `<p><span style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:#c43030;">Julie</span></p><p style="color:var(--white);font-size:1.05rem;margin-top:.3rem;">«La PROMESSA, Deculein. La promessa che mi hai fatto.»</p><p style="font-style:italic;color:var(--muted);margin-top:.8rem;">[I suoi occhi si socchiudono pericolosamente. Si contorce leggermente, la mano al colletto.]</p><p style="color:var(--white);font-size:1.05rem;margin-top:.8rem;">«Lo sapevo. Hai dimenticato. O peggio... hai scelto di dimenticare.»</p><p style="color:#6688aa;font-style:italic;margin-top:.8rem;">Frammento di memoria: <em>«Una notte. Fuoco. Le sue mani tra le mie. E una parola che non riesco a sentire.»</em></p><p style="margin-top:1rem;padding:.8rem;background:rgba(140,34,34,.12);border:1px solid rgba(140,34,34,.3);border-radius:4px;font-size:.88rem;color:var(--text);font-style:italic;">📓 DIARIO AGGIORNATO: "Julie ha menzionato una promessa. Sento che la conosco — ma non riesco a ricordarla."</p>`,
+    },
+    {
+      text: `<p><span style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:#c43030;">Julie</span></p><p style="color:var(--white);font-size:1.05rem;margin-top:.3rem;">«...Davvero?»</p><p style="font-style:italic;color:var(--muted);margin-top:.8rem;">[Ti fissa. Un lungo silenzio. Poi — una risata amara, breve, tagliente come vetro.]</p><p style="color:var(--white);font-size:1.05rem;margin-top:.8rem;">«Allora dimmi le ultime parole. Dimmi esattamente cosa hai promesso.»</p><p style="color:#6688aa;font-style:italic;margin-top:.8rem;">Frammento di memoria: <em>«So che ho detto qualcosa. Ma le parole non vengono. Solo il calore di quel momento — e poi il buio.»</em></p><p style="margin-top:1rem;padding:.8rem;background:rgba(140,34,34,.2);border:1px solid rgba(140,34,34,.4);border-radius:4px;font-size:.88rem;color:var(--text);font-style:italic;">⚠ ATTENZIONE: Il bluff ha peggiorato la situazione. Julie sa che stai mentendo. Odio +5%</p>`,
+    },
+    {
+      text: `<p><span style="font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:#c43030;">Julie</span></p><p style="color:var(--white);font-size:1.05rem;margin-top:.3rem;">«...»</p><p style="font-style:italic;color:var(--muted);margin-top:.8rem;">[Ti osserva. Nel tuo silenzio c'è qualcosa di diverso dalla freddezza a cui era abituata — qualcosa di più simile a uno smarrimento genuino.]</p><p style="color:var(--white);font-size:1.05rem;margin-top:.8rem;">«Ti odio. E finché ti odio... posso continuare.»</p><p style="font-style:italic;color:var(--muted);margin-top:.8rem;">[Se ne va. Ma si gira un istante — solo un istante — come se aspettasse qualcosa che non arriva.]</p><p style="margin-top:1rem;padding:.8rem;background:rgba(180,140,60,.08);border:1px solid rgba(180,140,60,.25);border-radius:4px;font-size:.88rem;color:var(--text);font-style:italic;">💭 Scelta Neutra: Julie nota qualcosa di diverso nei tuoi occhi. Qualcosa che non sa ancora nominare.</p>`,
+    }
+  ];
+
+  function pickChoice(i) {
+    document.querySelectorAll('.scene-choice').forEach((el, idx) => {
+      el.classList.toggle('scene-choice--active', idx === i);
+    });
+    const box = document.getElementById('choice-result');
+    box.style.display = 'block';
+    box.innerHTML = results[i].text;
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+</script>
+</body>
+</html>
